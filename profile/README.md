@@ -31,12 +31,34 @@
 | [honcho-selfhost](https://github.com/team-memory-system/honcho-selfhost) | 기억 서버. `plastic-labs/honcho` 포크 (AGPL-3.0) | 사람마다 컴퓨터 한 대 |
 | [llm-proxy](https://github.com/team-memory-system/llm-proxy) | 구독 계정을 API로 바꾸는 어댑터와 라우터 (AGPL-3.0) | 거점 컴퓨터만 |
 
-직접 내려받을 저장소는 **`honcho-agent-bridge` 하나**입니다. 나머지 둘은 그것이 필요할 때
-가져다 씁니다.
+직접 내려받을 저장소는 **`honcho-agent-bridge` 하나**입니다. 기억 서버를 이 컴퓨터에 두는
+경우, 설치 과정이 `honcho-selfhost` 를 `server/honcho/` 로 clone 해 옵니다. 어느 저장소의
+어느 지점을 가져올지는 플러그인 안의 `server/honcho-source.json` 에 적혀 있습니다.
+`llm-proxy` 는 거점 운영자만 씁니다.
 
 ---
 
 # 설치
+
+## 먼저 고를 것 — 남의 서버에 붙을지, 이 컴퓨터를 서버로 둘지
+
+설치를 시작하기 전에 이것부터 정해야 합니다. 나중에 바꾸려면 기억을 옮겨야 하기 때문입니다.
+에이전트에게 설치를 맡길 때도 에이전트가 먼저 이걸 물어야 하고, 답을 듣기 전에는
+아무것도 설치하지 않습니다.
+
+| | **남의 서버에 붙는다** | **이 컴퓨터를 서버로 둔다** |
+|---|---|---|
+| 내 Postgres | 없음 | 이 컴퓨터에 생김 |
+| 내 대화가 쌓이는 곳 | 안 쌓임 | 이 컴퓨터 |
+| 볼 수 있는 것 | 거점 주인이 열어 준 `chat` 창구 | 내 기억 전부 |
+| 필요한 것 | Node, 그리고 거점 주인에게 받은 네 값 | Docker Desktop, 디스크 몇 GB |
+| 해당 절차 | **경우 A** | **경우 B**(나만) 또는 **경우 C**(팀 거점) |
+
+- 팀원 대부분은 **남의 서버에 붙는다**입니다. 경우 A로 가세요.
+- 내 대화도 기억으로 만들고 싶으면 **이 컴퓨터를 서버로 둔다**입니다. 나 혼자 쓸 거면
+  경우 B, 다른 사람도 이 서버에 붙게 할 거면 경우 C입니다.
+- 이미 기억 서버가 있는 컴퓨터에서 또 설치하지 마세요. `bridge status`와 `doctor`로
+  지금 상태를 먼저 확인합니다.
 
 ## 경우 A — 남의 기억에 물어보기만 할 때
 
@@ -81,11 +103,15 @@ codex plugin add honcho-agent-bridge@honcho-agent-bridge
 
 Claude Code에서 `/memory-setup`, Codex에서 `$setup-memory`.
 
+**Docker Desktop, Node.js 18 이상, `git` 이 있어야 합니다.** 기억 서버 소스는 플러그인에
+들어 있지 않고 설치 과정이 내려받습니다.
+
 에이전트가 순서대로 물어봅니다. 하는 일은 이렇습니다.
 
 1. **지금 상태 확인** — 어떤 에이전트가 깔려 있는지, 기억 서버가 이미 도는지
 2. **서버를 어떻게 할지** — 이미 도는 서버가 있으면 그걸 씁니다. 없으면 이 컴퓨터에
-   Docker로 올릴지 물어봅니다
+   Docker로 올릴지 물어봅니다. `server plan` 이 소스를 내려받을 예정이라고 먼저 알려 주고,
+   실제 내려받기는 `server prepare` 가 합니다
 3. **어느 에이전트에 붙일지** — 감지된 것 전부가 기본값입니다
 4. **기억 저장 위치** — 운영체제 기본 위치를 권합니다
 5. **내 이름 (peer ID)** — 기억 안에서 나를 가리키는 이름입니다
@@ -121,6 +147,12 @@ node scripts/cli.mjs ui open
 
 **순서**
 
+`scripts/cli.mjs` 는 설치된 플러그인 안에 있습니다. Claude Code 는
+`~/.claude/plugins/cache/team-memory-system/honcho-agent-bridge/<버전>/`,
+Codex 는 `~/.codex/plugins/cache/honcho-agent-bridge/honcho-agent-bridge/<버전>/`
+입니다. 그 디렉터리에서 실행하세요. `server prepare` 가 `honcho-selfhost` 를
+`server/honcho/` 로 clone 한 다음 이미지를 빌드합니다.
+
 ```sh
 # 1. 기억 서버 준비와 기동
 node scripts/cli.mjs server plan    --profile personal   # 무엇이 바뀌는지 먼저 봅니다
@@ -141,10 +173,18 @@ node scripts/cli.mjs host status    --profile personal
 
 기억 서버 자체는 Docker의 `restart: unless-stopped`로 다시 올라옵니다.
 
-**팀원에게 창구를 열려면** Cloudflare 터널과 Access 정책이 필요합니다. 공유용 브리지는
-도구가 `chat` 하나로 제한되고, 요청 헤더로도 도구 인자로도 다른 워크스페이스나 피어를
-가리킬 수 없게 고정됩니다. 토큰이 틀리면 연결 단계에서 거부하고, 모든 호출을 질의 원문과
-함께 기록합니다.
+**팀원에게 창구를 열려면** Cloudflare 터널과 Access 정책이 필요합니다. 공유용 브리지에는
+네 가지 장치가 있는데, **켜야 동작합니다.** 코드에 있다고 켜져 있는 것이 아닙니다.
+
+| 장치 | 켜는 방법 |
+|---|---|
+| 도구를 `chat` 하나로 제한 | `HONCHO_MCP_ENABLED_TOOLS=chat` 또는 대시보드의 도구 설정 |
+| 다른 워크스페이스·피어를 가리키지 못하게 고정 | `HONCHO_MCP_PIN_DEFAULTS=1`. 헤더와 도구 인자 양쪽을 막습니다 |
+| 틀린 토큰을 연결 단계에서 거부 | `HONCHO_MCP_BEARER_TOKEN_FILE` 설정. 없으면 브리지가 열린 채로 뜹니다 |
+| 모든 호출을 질의 원문과 함께 기록 | `HONCHO_AUDIT_DSN` |
+
+거점을 올린 뒤 이 네 개가 실제로 설정돼 있는지 확인하세요. 하나라도 빠지면 팀원 설치기의
+연결 확인이 성공으로 나온 뒤 첫 질문에서 거부되거나, 조회 기록이 아무것도 남지 않습니다.
 
 ---
 
@@ -168,6 +208,9 @@ node scripts/cli.mjs doctor   # 무엇이 잘못됐는지
 - **공유 브리지를 연결하면 그 컴퓨터의 기억 도구는 브리지 것으로 바뀝니다.** 내 기억도
   만드는 컴퓨터(경우 B)에서 연결하면 내 기억을 직접 검색하는 도구가 보이지 않습니다
 - **기억 서버의 인증이 꺼져 있습니다** (`AUTH_USE_AUTH=false`)
+- **지금 도는 거점의 공유 브리지는 위 네 장치 중 둘이 빠져 있습니다.** 틀린 토큰을 연결
+  단계에서 거부하는 검사와 조회 기록이 아직 그 기계에 적용되지 않았습니다. 코드에는 있고
+  프로세스 재시작과 설정 추가가 남았습니다
 - 각 저장소의 `README.md`(또는 `honcho-selfhost`의 `AGENTS.md`)에 나머지 열린 항목이
   적혀 있습니다
 
