@@ -42,22 +42,17 @@
 
 가장 많은 경우입니다. 내 대화를 모으지 않고, 거점의 `chat` 창구에만 붙습니다.
 
-**지금은 이 경로가 자동화되어 있지 않습니다.** 플러그인을 깐 뒤 설정 파일에 공유 브리지
-주소와 토큰을 손으로 넣어야 합니다. 거점 운영자에게 받으세요.
+1. **플러그인을 설치합니다.** 아래 경우 B의 1번과 같습니다.
+2. **Claude Code에서 `/memory-setup`, Codex에서 `$setup-memory`를 실행하고 "물어보기만"을
+   고릅니다.** 이 컴퓨터에서만 열리는 설치 화면이 브라우저에 뜹니다.
+3. **2번 칸 "다른 사람의 기억에 연결"에 기억 주인에게 받은 네 값을 넣고 연결을 누릅니다.**
+   브리지 주소, 브리지 토큰, Cloudflare 서비스 토큰 ID와 비밀입니다. 화면이 그 값으로
+   브리지에 실제로 닿은 뒤에만 저장하고, 쓸 수 있는 도구(`chat`)를 보여줍니다.
+4. **에이전트를 다시 시작합니다.** Claude Code는 `/reload-plugins`, Codex는 새 세션입니다.
 
-```jsonc
-// macOS:  ~/Library/Application Support/HonchoAgentBridge/config.json
-// 윈도우: %LOCALAPPDATA%\HonchoAgentBridge\config.json
-{
-  "honcho": {
-    "mcpBridgeUrl": "<거점이 알려준 주소>",
-    "mcpBridgeToken": "<거점이 알려준 토큰>",
-    "accessClientId": "<Cloudflare 서비스 토큰 ID>",
-    "accessClientSecret": "<Cloudflare 서비스 토큰 비밀>"
-  },
-  "user": { "peerId": "<내 이름>" }
-}
-```
+네 값은 채팅에 붙여넣지 마세요. 에이전트도 묻지 않게 되어 있습니다. 터미널에서 하려면
+`bridge connect --url <주소>`에 나머지 셋을 환경변수(`HONCHO_MCP_BEARER_TOKEN`,
+`CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET`)로 줍니다. 명령행 인자로 주면 거부합니다.
 
 이 값이 있으면 플러그인의 MCP 서버가 도구를 직접 구현하지 않고 거점의 브리지로 넘깁니다.
 그래서 도구는 `chat` 하나만 보이고, 호출은 거점의 조회 기록에 남습니다.
@@ -100,14 +95,15 @@ Claude Code에서 `/memory-setup`, Codex에서 `$setup-memory`.
 
 ### 화면으로 하고 싶으면
 
-터미널 대신 브라우저에서 같은 일을 할 수 있습니다.
+터미널 대신 브라우저에서 같은 일을 할 수 있습니다. `/memory-setup`에서 화면을 열어 달라고
+하거나, 저장소에서 직접 엽니다.
 
 ```sh
-npm run ui
+node scripts/cli.mjs ui open
 ```
 
-상태 확인, 훅 설치, 서버·프록시 켜기, ChatGPT 내보내기 파일 올리기까지 한 화면입니다.
-이 컴퓨터에서만 열립니다.
+상태 확인, 다른 사람의 기억에 연결, 훅 설치, 서버·프록시 켜기, ChatGPT 내보내기 파일
+올리기까지 한 화면입니다. 이 컴퓨터에서만 열립니다.
 
 ## 경우 C — 거점을 직접 운영할 때
 
@@ -146,8 +142,9 @@ node scripts/cli.mjs host status    --profile personal
 기억 서버 자체는 Docker의 `restart: unless-stopped`로 다시 올라옵니다.
 
 **팀원에게 창구를 열려면** Cloudflare 터널과 Access 정책이 필요합니다. 공유용 브리지는
-도구가 `chat` 하나로 제한되고, 요청 헤더로 다른 워크스페이스를 가리킬 수 없게 고정되며,
-모든 호출이 질의 원문과 함께 기록됩니다.
+도구가 `chat` 하나로 제한되고, 요청 헤더로도 도구 인자로도 다른 워크스페이스나 피어를
+가리킬 수 없게 고정됩니다. 토큰이 틀리면 연결 단계에서 거부하고, 모든 호출을 질의 원문과
+함께 기록합니다.
 
 ---
 
@@ -165,9 +162,11 @@ node scripts/cli.mjs doctor   # 무엇이 잘못됐는지
 
 숨기지 않고 적습니다.
 
-- **경우 A가 자동화되어 있지 않습니다.** `mcpBridgeUrl`을 써 주는 설치 옵션이 없어서
-  설정 파일을 손으로 고쳐야 합니다
-- **Cloudflare Access 정책이 아직 없습니다.** 공유 경로를 열기 전에 필요합니다
+- **팀원용 Cloudflare Access 정책과 서비스 토큰이 아직 없습니다.** 거점 운영자 본인의
+  주소는 등록된 WARP 기기만 통과하게 막혀 있습니다. 팀원에게 창구를 열기 전에 필요합니다
+- **공유 브리지는 한 곳만 연결됩니다.** 여러 사람의 기억에 물어보는 방법은 아직 없습니다
+- **공유 브리지를 연결하면 그 컴퓨터의 기억 도구는 브리지 것으로 바뀝니다.** 내 기억도
+  만드는 컴퓨터(경우 B)에서 연결하면 내 기억을 직접 검색하는 도구가 보이지 않습니다
 - **기억 서버의 인증이 꺼져 있습니다** (`AUTH_USE_AUTH=false`)
 - 각 저장소의 `README.md`(또는 `honcho-selfhost`의 `AGENTS.md`)에 나머지 열린 항목이
   적혀 있습니다
