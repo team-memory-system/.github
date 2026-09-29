@@ -29,12 +29,13 @@
 |---|---|---|
 | [honcho-agent-bridge](https://github.com/team-memory-system/honcho-agent-bridge) | 수집기·설치기·에이전트 플러그인 (MIT) | 에이전트를 돌리는 기계마다 |
 | [honcho-selfhost](https://github.com/team-memory-system/honcho-selfhost) | 기억 서버. `plastic-labs/honcho` 포크 (AGPL-3.0) | 사람마다 컴퓨터 한 대 |
-| [llm-proxy](https://github.com/team-memory-system/llm-proxy) | 구독 계정을 API로 바꾸는 어댑터와 라우터 (AGPL-3.0) | 거점 컴퓨터만 |
+| [subscription-gateway](https://github.com/team-memory-system/subscription-gateway) | Codex·Claude 구독 계정을 API로 바꾸는 어댑터와, 한도에 걸리면 다음 계정으로 넘기는 라우터 (AGPL-3.0) | 기억 서버를 두는 컴퓨터 |
 
 직접 내려받을 저장소는 **`honcho-agent-bridge` 하나**입니다. 기억 서버를 이 컴퓨터에 두는
-경우, 설치 과정이 `honcho-selfhost` 를 `server/honcho/` 로 clone 해 옵니다. 어느 저장소의
-어느 지점을 가져올지는 플러그인 안의 `server/honcho-source.json` 에 적혀 있습니다.
-`llm-proxy` 는 거점 운영자만 씁니다.
+경우, 설치 과정이 나머지 둘을 내려받습니다. `honcho-selfhost` 는 `server/honcho/` 로,
+`subscription-gateway` 는 앱 폴더 아래 `runtime/subscription-gateway` 로 clone 합니다.
+어느 저장소의 어느 지점을 가져올지는 플러그인 안의 `server/honcho-source.json` 과
+`server/gateway-source.json` 에 적혀 있습니다.
 
 ---
 
@@ -103,19 +104,23 @@ codex plugin add honcho-agent-bridge@honcho-agent-bridge
 
 Claude Code에서 `/memory-setup`, Codex에서 `$setup-memory`.
 
-**Docker Desktop, Node.js 18 이상, `git` 이 있어야 합니다.** 기억 서버 소스는 플러그인에
-들어 있지 않고 설치 과정이 내려받습니다.
+**Docker Desktop, Node.js 18 이상, `git`, Ollama, 그리고 Codex나 Claude 구독이 있어야
+합니다.** 기억 서버와 게이트웨이 소스는 플러그인에 들어 있지 않고 설치 과정이 내려받습니다.
 
 에이전트가 순서대로 물어봅니다. 하는 일은 이렇습니다.
 
 1. **지금 상태 확인** — 어떤 에이전트가 깔려 있는지, 기억 서버가 이미 도는지
 2. **서버를 어떻게 할지** — 이미 도는 서버가 있으면 그걸 씁니다. 없으면 이 컴퓨터에
-   Docker로 올릴지 물어봅니다. `server plan` 이 소스를 내려받을 예정이라고 먼저 알려 주고,
-   실제 내려받기는 `server prepare` 가 합니다
-3. **어느 에이전트에 붙일지** — 감지된 것 전부가 기본값입니다
-4. **기억 저장 위치** — 운영체제 기본 위치를 권합니다
-5. **내 이름 (peer ID)** — 기억 안에서 나를 가리키는 이름입니다
-6. **계획을 먼저 보여주고** 확인을 받은 뒤에 바꿉니다. 고치는 파일은 미리 백업합니다
+   Docker로 올릴지 물어봅니다. `server plan` 이 내려받을 소스와 게이트웨이 설치를 먼저
+   알려 주고, 실제 내려받기와 설치는 `server prepare` 가 합니다
+3. **구독 계정 로그인** — `server prepare` 가 구독 게이트웨이를 설치하고 그 화면
+   (`http://127.0.0.1:11450`)을 열어 달라고 합니다. 거기서 Codex나 Claude 계정으로
+   로그인하면 기억 서버가 그 계정의 모델을 씁니다. 계정을 여러 개 넣으면 한도에 걸린
+   계정은 건너뜁니다. 이 로그인은 내 `codex`·`claude` 명령의 로그인과 따로 보관됩니다
+4. **어느 에이전트에 붙일지** — 감지된 것 전부가 기본값입니다
+5. **기억 저장 위치** — 운영체제 기본 위치를 권합니다
+6. **내 이름 (peer ID)** — 기억 안에서 나를 가리키는 이름입니다
+7. **계획을 먼저 보여주고** 확인을 받은 뒤에 바꿉니다. 고치는 파일은 미리 백업합니다
 
 끝나면 대화가 끝날 때마다 자동으로 모입니다. 따로 실행할 것이 없습니다.
 
@@ -128,12 +133,12 @@ Claude Code에서 `/memory-setup`, Codex에서 `$setup-memory`.
 node scripts/cli.mjs ui open
 ```
 
-상태 확인, 다른 사람의 기억에 연결, 훅 설치, 서버·프록시 켜기, ChatGPT 내보내기 파일
+상태 확인, 다른 사람의 기억에 연결, 훅 설치, 서버·게이트웨이 켜기, ChatGPT 내보내기 파일
 올리기까지 한 화면입니다. 이 컴퓨터에서만 열립니다.
 
 ## 경우 C — 거점을 직접 운영할 때
 
-기억 서버와 LLM 프록시를 자기 컴퓨터에서 돌립니다.
+기억 서버와 구독 게이트웨이를 자기 컴퓨터에서 돌립니다.
 
 **필요한 것**
 
@@ -143,7 +148,8 @@ node scripts/cli.mjs ui open
 | Docker | Desktop 또는 Engine + Compose. 윈도우는 WSL 2 백엔드 |
 | Node.js | 18 이상 |
 | Ollama | 임베딩용. `PATH`에 있어야 합니다 |
-| Codex 로그인 | `codex login`. 자격증명은 복사되지 않고 그 자리에서 읽습니다 |
+| git | 기억 서버와 게이트웨이 소스를 내려받습니다 |
+| 구독 계정 | Codex나 Claude. 게이트웨이 화면에서 로그인하고, 그 로그인은 내 `codex`·`claude` 명령과 따로 보관됩니다 |
 
 **순서**
 
@@ -154,22 +160,20 @@ Codex 는 `~/.codex/plugins/cache/honcho-agent-bridge/honcho-agent-bridge/<버�
 `server/honcho/` 로 clone 한 다음 이미지를 빌드합니다.
 
 ```sh
-# 1. 기억 서버 준비와 기동
 node scripts/cli.mjs server plan    --profile personal   # 무엇이 바뀌는지 먼저 봅니다
-node scripts/cli.mjs server prepare --profile personal
+node scripts/cli.mjs server prepare --profile personal   # 게이트웨이를 설치하고, 로그인 전이면 여기서 멈춥니다
+node scripts/cli.mjs gateway open                        # 게이트웨이 화면에서 Codex·Claude 로그인
+node scripts/cli.mjs server prepare --profile personal   # 로그인한 뒤 다시: 라우터 주소·키·모델을 .env 에 씁니다
 node scripts/cli.mjs server start   --profile personal
 node scripts/cli.mjs server verify  --profile personal
-
-# 2. LLM 프록시 (구독 계정을 API로)
-node scripts/cli.mjs host prepare   --profile personal
-node scripts/cli.mjs host start     --profile personal
-node scripts/cli.mjs host status    --profile personal
+node scripts/cli.mjs host status    --profile personal   # 게이트웨이와 Ollama 상태
 ```
 
-**프록시는 재부팅하면 다시 올려야 합니다.** launchd·작업 스케줄러·systemd에 아무것도
-등록하지 않습니다. `host start`가 감시 프로세스를 분리 실행하고, 그 프로세스는 터미널을
-닫아도 살아 있지만 재부팅은 넘기지 못합니다. 그동안 기억 저장은 계속되고 파생 처리만
-멈춥니다.
+**재부팅한 뒤에는** 게이트웨이가 스스로 다시 뜹니다. 설치할 때 자기 자동 시작(macOS는
+LaunchAgent, 윈도우는 로그온 실행 항목)을 등록하기 때문입니다. 이 플러그인 자체는
+launchd·작업 스케줄러·systemd에 아무것도 등록하지 않습니다. 그래서 Qwen 임베딩 모델을
+올려 두는 Ollama 감시 프로세스는 `host start`를 실행하거나 설치 화면에서 켜야 다시 돕니다.
+그동안 기억 저장은 계속되고, 임베딩은 Ollama 앱이 떠 있을 때만 됩니다.
 
 기억 서버 자체는 Docker의 `restart: unless-stopped`로 다시 올라옵니다.
 
