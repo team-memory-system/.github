@@ -103,6 +103,15 @@ codex plugin add honcho-agent-bridge@honcho-agent-bridge
 
 설치한 뒤 Claude Code는 플러그인을 다시 읽고, Codex는 새 세션을 엽니다.
 
+이미 깔려 있으면 새 버전으로 올립니다.
+
+```sh
+claude plugin marketplace update honcho-agent-bridge
+claude plugin update honcho-agent-bridge@honcho-agent-bridge
+codex plugin marketplace upgrade
+codex plugin add honcho-agent-bridge@honcho-agent-bridge
+```
+
 ### 2. 설치 명령
 
 Claude Code에서 `/memory-setup`, Codex에서 `$setup-memory`.
@@ -125,6 +134,14 @@ Docker Desktop이 꺼져 있으면 설치 과정이 켜고 엔진이 뜰 때까�
 5. **기억 저장 위치** — 운영체제 기본 위치를 권합니다
 6. **내 이름 (peer ID)** — 기억 안에서 나를 가리키는 이름입니다
 7. **계획을 먼저 보여주고** 확인을 받은 뒤에 바꿉니다. 고치는 파일은 미리 백업합니다
+
+에이전트 없이 터미널에서 할 때 마지막 단계는 이 명령입니다. 서버를 방금 이 컴퓨터에 올렸으면
+`--honcho-url`은 필요 없습니다. 전에 다른 서버로 보내던 컴퓨터면 `server start`가 알려 준
+`apiUrl`을 `--honcho-url`로 줍니다.
+
+```sh
+node <플러그인 폴더>/scripts/cli.mjs setup apply --agents codex,claude --user-peer <내 이름>
+```
 
 설치가 끝나면 세 가지만 확인합니다.
 
