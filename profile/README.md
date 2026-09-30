@@ -27,6 +27,9 @@
 
 이 조직은 기억 서버와 에이전트 브리지를 관리합니다. 구독 게이트웨이는
 `chenjingdev`의 독립 프로젝트이고, 팀 메모리는 검증한 커밋을 지정해 가져다 씁니다.
+게이트웨이 소스는 [honcho-agent-bridge 저장소](https://github.com/team-memory-system/honcho-agent-bridge)의
+`subscription-gateway/` 서브모듈로 연결돼 있습니다. GitHub 파일 목록의 화살표 폴더를
+누르면 원본의 지정된 커밋으로 이동합니다.
 
 | | 무엇인가 | 어디에 설치하나 |
 |---|---|---|
