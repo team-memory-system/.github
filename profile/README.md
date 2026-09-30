@@ -23,19 +23,23 @@
 **팀원끼리 데이터베이스를 공유하지 않습니다.** 공유되는 것은 MCP 도구 `chat` 하나뿐입니다.
 팀원은 질문을 하고 답을 받습니다. 원문 메시지를 읽지는 않습니다.
 
-## 저장소 세 개
+## 조직 저장소와 공용 의존성
+
+이 조직은 기억 서버와 에이전트 브리지를 관리합니다. 구독 게이트웨이는
+`chenjingdev`의 독립 프로젝트이고, 팀 메모리는 검증한 커밋을 지정해 가져다 씁니다.
 
 | | 무엇인가 | 어디에 설치하나 |
 |---|---|---|
 | [honcho-agent-bridge](https://github.com/team-memory-system/honcho-agent-bridge) | 수집기·설치기·에이전트 플러그인 (MIT) | 에이전트를 돌리는 기계마다 |
 | [honcho-selfhost](https://github.com/team-memory-system/honcho-selfhost) | 기억 서버. `plastic-labs/honcho` 포크 (AGPL-3.0) | 사람마다 컴퓨터 한 대 |
-| [subscription-gateway](https://github.com/team-memory-system/subscription-gateway) | Codex·Claude 구독 계정을 API로 바꾸는 어댑터와, 한도에 걸리면 다음 계정으로 넘기는 라우터 (AGPL-3.0) | 기억 서버를 두는 컴퓨터 |
+| [subscription-gateway](https://github.com/chenjingdev/subscription-gateway) | 다른 프로젝트에서도 독립적으로 쓰는 공용 구독 게이트웨이. Codex·Claude 계정을 API로 바꾸고 한도에 걸리면 다음 계정으로 넘깁니다 (AGPL-3.0) | 팀 메모리에서는 기억 서버를 두는 컴퓨터 |
 
 직접 내려받을 저장소는 **`honcho-agent-bridge` 하나**입니다. 기억 서버를 이 컴퓨터에 두는
 경우, 설치 과정이 나머지 둘을 내려받습니다. `honcho-selfhost` 는 `server/honcho/` 로,
 `subscription-gateway` 는 앱 폴더 아래 `runtime/subscription-gateway` 로 clone 합니다.
 어느 저장소의 어느 지점을 가져올지는 플러그인 안의 `server/honcho-source.json` 과
-`server/gateway-source.json` 에 적혀 있습니다.
+`server/gateway-source.json` 에 적혀 있습니다. 게이트웨이는 플러그인 버전별로
+검증한 커밋에 고정되며, 원본 저장소의 최신 변경이 설치에 자동으로 들어오지 않습니다.
 
 ---
 
