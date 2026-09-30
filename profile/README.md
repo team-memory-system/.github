@@ -34,12 +34,13 @@
 | | 무엇인가 | 어디에 설치하나 |
 |---|---|---|
 | [honcho-agent-bridge](https://github.com/team-memory-system/honcho-agent-bridge) | 수집기·설치기·에이전트 플러그인 (MIT) | 에이전트를 돌리는 기계마다 |
-| [honcho-selfhost](https://github.com/team-memory-system/honcho-selfhost) | 기억 서버. `plastic-labs/honcho` 포크 (AGPL-3.0) | 사람마다 컴퓨터 한 대 |
+| [honcho-selfhost](https://github.com/team-memory-system/honcho-selfhost) | 기억 서버. 공식 Honcho 서브모듈에 자체 패치를 적용하는 배포 저장소 (AGPL-3.0) | 사람마다 컴퓨터 한 대 |
 | [subscription-gateway](https://github.com/chenjingdev/subscription-gateway) | 다른 프로젝트에서도 독립적으로 쓰는 공용 구독 게이트웨이. Codex·Claude 계정을 API로 바꾸고 한도에 걸리면 다음 계정으로 넘깁니다 (AGPL-3.0) | 팀 메모리에서는 기억 서버를 두는 컴퓨터 |
 
 직접 내려받을 저장소는 **`honcho-agent-bridge` 하나**입니다. 기억 서버를 이 컴퓨터에 두는
-경우, 설치 과정이 나머지 둘을 내려받습니다. `honcho-selfhost` 는 `server/honcho/` 로,
-`subscription-gateway` 는 앱 폴더 아래 `runtime/subscription-gateway` 로 clone 합니다.
+경우, 설치 과정이 나머지 둘을 내려받습니다. `honcho-selfhost`의 공식 서브모듈과 패치를
+합쳐 `server/honcho/`에 실행 소스를 준비하고, `subscription-gateway`는 앱 폴더 아래
+`runtime/subscription-gateway`로 clone 합니다. 이 소스 구조에는 플러그인 0.3.4 이상이 필요합니다.
 어느 저장소의 어느 지점을 가져올지는 플러그인 안의 `server/honcho-source.json` 과
 `server/gateway-source.json` 에 적혀 있습니다. 게이트웨이는 플러그인 버전별로
 검증한 커밋에 고정되며, 원본 저장소의 최신 변경이 설치에 자동으로 들어오지 않습니다.
