@@ -23,19 +23,16 @@
 **팀원끼리 데이터베이스를 공유하지 않습니다.** 공유되는 것은 MCP 도구 `chat` 하나뿐입니다.
 팀원은 질문을 하고 답을 받습니다. 원문 메시지를 읽지는 않습니다.
 
-## 조직 저장소와 공용 의존성
+## 조직 저장소
 
-이 조직은 기억 서버와 에이전트 브리지를 관리합니다. 구독 게이트웨이는
-`chenjingdev`의 독립 프로젝트이고, 팀 메모리는 검증한 커밋을 지정해 가져다 씁니다.
-게이트웨이 소스는 [honcho-agent-bridge 저장소](https://github.com/team-memory-system/honcho-agent-bridge)의
-`subscription-gateway/` 서브모듈로 연결돼 있습니다. GitHub 파일 목록의 화살표 폴더를
-누르면 원본의 지정된 커밋으로 이동합니다.
+세 저장소가 모두 이 조직에 나란히 있습니다. 구독 게이트웨이는 다른 프로젝트에서도
+따로 쓸 수 있고, 팀 메모리는 검증한 커밋을 지정해 가져다 씁니다.
 
 | | 무엇인가 | 어디에 설치하나 |
 |---|---|---|
 | [honcho-agent-bridge](https://github.com/team-memory-system/honcho-agent-bridge) | 수집기·설치기·에이전트 플러그인 (MIT) | 에이전트를 돌리는 기계마다 |
 | [honcho-selfhost](https://github.com/team-memory-system/honcho-selfhost) | 기억 서버. 공식 Honcho 서브모듈에 자체 패치를 적용하는 배포 저장소 (AGPL-3.0) | 사람마다 컴퓨터 한 대 |
-| [subscription-gateway](https://github.com/chenjingdev/subscription-gateway) | 다른 프로젝트에서도 독립적으로 쓰는 공용 구독 게이트웨이. Codex·Claude 계정을 API로 바꾸고 한도에 걸리면 다음 계정으로 넘깁니다 (AGPL-3.0) | 팀 메모리에서는 기억 서버를 두는 컴퓨터 |
+| [subscription-gateway](https://github.com/team-memory-system/subscription-gateway) | 다른 프로젝트에서도 독립적으로 쓰는 공용 구독 게이트웨이. Codex·Claude 계정을 API로 바꾸고 한도에 걸리면 다음 계정으로 넘깁니다 (AGPL-3.0) | 팀 메모리에서는 기억 서버를 두는 컴퓨터 |
 
 직접 내려받을 저장소는 **`honcho-agent-bridge` 하나**입니다. 기억 서버를 이 컴퓨터에 두는
 경우, 설치 과정이 나머지 둘을 내려받습니다. `honcho-selfhost`의 공식 서브모듈과 패치를
