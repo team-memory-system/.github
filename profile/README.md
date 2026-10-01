@@ -42,12 +42,12 @@
 
 # 설치
 
-> **에이전트에게.** 아래 "먼저 설치할 것"과 "플러그인 설치"까지만 이 문서를 따르세요. 그다음은
-> 플러그인에 든 `setup-memory` 스킬을 읽고 그대로 따릅니다. 설치 직후 세션에는 스킬이 아직 보이지
-> 않으므로 파일을 직접 엽니다. Claude Code는
-> `~/.claude/plugins/cache/honcho-agent-bridge/honcho-agent-bridge/<버전>/skills/setup-memory/SKILL.md`,
-> Codex는 `~/.codex/plugins/cache/honcho-agent-bridge/` 아래의 같은 파일입니다. 기능을 묻는 질문은
-> 스킬에 적힌 세 선택지를 문구 그대로 쓰고, 선택지를 더하거나 줄여 쓰지 않습니다.
+> **에이전트에게.** 이 문서로는 "먼저 설치할 것"과 "플러그인 설치"까지만 합니다. 플러그인을 깐 뒤에는
+> 더 진행하지 말고 사용자에게 아래 문장을 그대로 전하세요. 그다음 안내는 플러그인의 설치 스킬이
+> 정해진 문장으로 합니다.
+>
+> - Claude Code: "플러그인을 설치했습니다. `/reload-plugins`를 입력한 다음 `/memory-setup`을 입력하세요. 거기서부터 설치를 안내합니다."
+> - Codex: "플러그인을 설치했습니다. Codex를 새 세션으로 연 다음 `$setup-memory`를 입력하세요. 거기서부터 설치를 안내합니다."
 
 ## 먼저 설치할 것
 
