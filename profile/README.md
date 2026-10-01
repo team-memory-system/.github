@@ -30,7 +30,7 @@
 | | 무엇인가 | 어디에 설치하나 |
 |---|---|---|
 | [honcho-agent-bridge](https://github.com/team-memory-system/honcho-agent-bridge) | 팀 메모리 앱, 수집기, 설치기, 에이전트 플러그인 (MIT) | 에이전트를 돌리는 컴퓨터마다 |
-| [honcho-selfhost](https://github.com/team-memory-system/honcho-selfhost) | 기억 서버. 공식 Honcho 서브모듈에 자체 패치를 적용하는 배포 저장소 (AGPL-3.0) | 사람마다 컴퓨터 한 대 |
+| [honcho-selfhost](https://github.com/team-memory-system/honcho-selfhost) | 기억 서버. 공식 Honcho 서브모듈에 자체 패치를 적용하는 배포 저장소 (AGPL-3.0) | 서버를 둘 컴퓨터 |
 | [subscription-gateway](https://github.com/team-memory-system/subscription-gateway) | Codex·Claude 구독 계정을 모델 API로 바꾸고, 한도에 걸리면 다음 계정으로 넘기는 공용 게이트웨이. 다른 프로젝트에서도 따로 씁니다 (AGPL-3.0) | 기억 서버를 두는 컴퓨터 |
 
 직접 설치하는 것은 **`honcho-agent-bridge` 하나**입니다. 기억 서버를 이 컴퓨터에 두면 설치
@@ -104,20 +104,11 @@ node scripts/cli.mjs ui open        # http://127.0.0.1:4180
 
 | 기능 | 하는 일 | 필요한 것 |
 |---|---|---|
-| **서버 설치** | 이 컴퓨터에 내 기억 서버를 둔다. 한 사람에게 하나면 된다 | 디스크 몇 GB, Codex나 Claude 구독. Docker와 Ollama는 앱이 설치합니다 |
-| **대화 동기화** | 이 컴퓨터의 Claude Code·Codex 대화를 내 기억 서버로 보낸다. 서버는 이 컴퓨터에 있어도, 다른 컴퓨터에 있어도 된다 | 서버가 다른 컴퓨터에 있으면 그 주소와 서버 토큰, Cloudflare WARP |
-| **다른 사람 기억에 묻기 (chat)** | 팀원이 열어 준 창구로 그 사람 기억에 질문한다. 원문은 보지 않고 답만 받는다 | 기억 주인에게 받은 네 값 |
-
-흔한 조합은 이렇습니다.
-
-| 컴퓨터 | 켤 기능 |
-|---|---|
-| 내 서버를 두는 컴퓨터 | 서버 설치 + 대화 동기화 |
-| 내 다른 컴퓨터 (회사 노트북 등) | 대화 동기화 (+ chat) |
-| 팀원 기억에 묻기만 하는 컴퓨터 | chat |
+| **서버 설치** | 이 컴퓨터에 기억 서버를 설치한다. 다른 컴퓨터의 대화도 받을 수 있다 | 디스크 몇 GB, Codex나 Claude 구독. Docker와 Ollama는 앱이 설치합니다 |
+| **대화 동기화** | 이 컴퓨터의 Claude Code·Codex 대화를 기억 서버로 보낸다. 서버는 이 컴퓨터에 있어도, 다른 컴퓨터에 있어도 된다 | 서버가 다른 컴퓨터에 있으면 그 주소와 서버 토큰, Cloudflare WARP |
+| **다른 사람 기억에 묻기 (chat)** | 팀원이 공유한 기억에 질문한다. 원문은 보지 않고 답만 받는다 | 공유한 팀원에게 받은 네 값 |
 
 고른 기능은 체크리스트로 보이고, 단계마다 지금 된 것과 안 된 것을 실제 상태로 알려 줍니다.
-한 사람의 기억 서버는 한 대만 둡니다. 나중에 서버를 옮기려면 기억을 옮겨야 합니다.
 
 ---
 
@@ -236,9 +227,9 @@ node scripts/cli.mjs ui open        # http://127.0.0.1:4180
 
 ## 다른 사람 기억에 묻기 (chat)
 
-기억 주인이 열어 준 공유 창구의 `chat`으로 그 사람 기억에 묻습니다. 대화 동기화와 같이 켤 수 있습니다.
+팀원이 공유한 기억에 `chat`으로 묻습니다. 대화 동기화와 같이 켤 수 있습니다.
 
-1. **연결 → 다른 사람 기억에 묻기 (chat)**에 기억 주인에게 받은 네 값을 넣고 **연결**을 누릅니다.
+1. **연결 → 다른 사람 기억에 묻기 (chat)**에 기억을 공유한 팀원에게 받은 네 값을 넣고 **연결**을 누릅니다.
    창구 주소, 창구 토큰, Cloudflare 서비스 토큰 ID와 비밀입니다. 앱이 그 값으로 창구에
    실제로 닿은 뒤에만 저장합니다.
 2. **에이전트를 다시 시작합니다.** 이 컴퓨터가 대화 동기화를 하지 않으면 에이전트는 창구의 `chat`
@@ -246,7 +237,7 @@ node scripts/cli.mjs ui open        # http://127.0.0.1:4180
    도구로 묻습니다.
 
 창구 쪽 설정(도구를 `chat` 하나로 제한, 다른 사람을 가리키지 못하게 고정, 모든 호출 기록)은
-기억 주인의 서버에서 켭니다. [honcho-selfhost](https://github.com/team-memory-system/honcho-selfhost)의
+기억을 공유하는 쪽 서버에서 켭니다. [honcho-selfhost](https://github.com/team-memory-system/honcho-selfhost)의
 `AGENTS.md`를 보세요.
 
 ---
