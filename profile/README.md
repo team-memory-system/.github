@@ -63,7 +63,13 @@
 | **Cloudflare WARP** | 항상. 다른 컴퓨터의 서버와 팀원 기억에 닿는 길입니다 | 에이전트가 설치합니다(설치 창에서 Mac 암호). 직접 하려면 [WARP 내려받기](https://developers.cloudflare.com/cloudflare-one/team-and-resources/devices/warp/download-warp/) | 에이전트가 설치합니다. 직접 하려면 `winget install --id Cloudflare.Warp -e` |
 | Docker Desktop, Ollama | 서버 설치 | 없으면 앱이 설치합니다 | 없으면 앱이 설치합니다 |
 
-WARP는 Cloudflare One(Zero Trust) 계정에 기기를 등록해서 씁니다. 계정은 누구나 무료로 만들 수 있고, Cloudflare는 그 계정 이름을 **팀 이름**이라고 부릅니다. 로그인 주소 `<팀 이름>.cloudflareaccess.com`의 앞부분입니다. 서로의 기억에 닿으려면 모두 같은 계정에 등록합니다. 에이전트가 팀 이름을 묻고, 설치할 때 같이 넣어 등록까지 진행합니다. 직접 하려면 이렇게 합니다.
+WARP는 Cloudflare One(Zero Trust) 계정에 기기를 등록해서 씁니다. 계정은 누구나 무료로 만들 수 있고, Cloudflare는 그 계정 이름을 **팀 이름**이라고 부릅니다. 로그인 주소 `<팀 이름>.cloudflareaccess.com`의 앞부분입니다. 같이 쓰는 사람들은 **계정 하나에 모두 등록합니다.** 한 기기는 한 번에 한 계정에만 연결되기 때문입니다.
+
+- 한 사람이 계정을 만들고 팀 이름을 알려 줍니다. 나머지는 계정을 만들지 않습니다.
+- 계정을 만든 사람은 같이 쓸 사람의 이메일을 **Cloudflare One Client → 기기 등록** 규칙에 넣어 줍니다. 목록에 없는 이메일로 로그인하면 등록되지 않습니다.
+- 계정을 같이 쓰는 것은 "문을 열 자격"뿐입니다. 서버와 기억, 토큰은 그대로 각자 것이고, 누구에게 내 서버 토큰을 줄지는 각자 정합니다.
+
+에이전트가 팀 이름을 묻고, 설치할 때 같이 넣어 등록까지 진행합니다. 직접 하려면 이렇게 합니다.
 
 ```sh
 warp-cli registration new <팀 이름>   # 브라우저에서 팀 계정으로 로그인
