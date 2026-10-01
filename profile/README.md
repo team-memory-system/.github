@@ -42,7 +42,29 @@
 
 # 설치
 
-## 먼저: 플러그인 설치
+## 먼저 설치할 것
+
+플러그인을 깔기 전에 아래 프로그램부터 있어야 합니다. 에이전트에게 설치를 맡기면 기능을 고른 뒤
+이것부터 확인하고, 없으면 공식 설치 방법으로 설치할지 묻습니다. 앱의 **시작하기** 화면 첫 단계도 같은
+확인입니다.
+
+| 프로그램 | 언제 필요한가 | macOS | 윈도우 |
+|---|---|---|---|
+| **Claude Code 또는 Codex** | 항상 | 각 제품의 설치 안내 | 각 제품의 설치 안내 |
+| **Node.js 18 이상** | 항상. 플러그인과 앱이 Node로 돕니다 | [nodejs.org](https://nodejs.org) LTS 설치 파일, 또는 `brew install node` | `winget install --id OpenJS.NodeJS.LTS -e` |
+| **git** | 항상. 플러그인 설치와 서버 소스 받기에 씁니다 | `xcode-select --install` | `winget install --id Git.Git -e` |
+| **Cloudflare WARP** | 대화 동기화를 **다른 컴퓨터의 서버**로 할 때 꼭. chat에는 있으면 좋음 | [WARP 내려받기](https://developers.cloudflare.com/cloudflare-one/team-and-resources/devices/warp/download-warp/), 또는 `brew install --cask cloudflare-warp` | `winget install --id Cloudflare.Warp -e` |
+| Docker Desktop, Ollama | 서버 설치 | 없으면 앱이 설치합니다 | 없으면 앱이 설치합니다 |
+
+WARP는 설치한 뒤 팀에 가입해야 합니다. 팀 이름은 Cloudflare 계정을 관리하는 사람에게 받습니다.
+
+```sh
+warp-cli registration new <팀 이름>   # 브라우저에서 팀 계정으로 로그인
+warp-cli connect
+warp-cli status                       # Connected 이면 됩니다
+```
+
+## 그다음: 플러그인 설치
 
 **Claude Code**
 ```sh
@@ -67,7 +89,7 @@ codex plugin add honcho-agent-bridge@honcho-agent-bridge
 
 설치한 뒤 Claude Code는 `/reload-plugins`, Codex는 새 세션을 엽니다.
 
-## 그다음: 팀 메모리 앱 열기
+## 그리고: 팀 메모리 앱 열기
 
 Claude Code에서 `/memory-setup`, Codex에서 `$setup-memory`를 실행하면 에이전트가 앱을 열어
 줍니다. 직접 열려면 플러그인 폴더에서 이렇게 합니다.
@@ -177,7 +199,7 @@ node scripts/cli.mjs ui open        # http://127.0.0.1:4180
 내 이름과 모을 에이전트만 고른 뒤 **미리 보기 → 설정하기**를 누르면 됩니다. 아래는 서버가 **다른
 컴퓨터**에 있을 때입니다. 이 컴퓨터에는 서버를 두지 않고 수집기만 둡니다. Docker는 필요 없습니다.
 
-1. **Cloudflare WARP를 팀 계정으로 켭니다.** WARP 앱을 깔고 팀에 가입합니다. 에이전트가
+1. **Cloudflare WARP를 팀 계정으로 켭니다.** [먼저 설치할 것](#먼저-설치할-것)의 WARP를 깔고 팀에 가입합니다. 에이전트가
    `warp-cli`로 도와줄 수 있습니다.
    ```sh
    warp-cli registration new <팀 이름>   # 처음 한 번, 브라우저에서 팀 계정으로 로그인
