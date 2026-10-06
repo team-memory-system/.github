@@ -60,6 +60,9 @@
 
 ## 그다음: 플러그인 설치
 
+지금 쓰는 에이전트 한 곳에만 설치합니다. 대화 보내기 설정을 적용하면, 고른 에이전트 중 플러그인이
+없는 쪽(Codex 또는 Claude Code)에도 앱이 플러그인을 넣습니다.
+
 **Claude Code**
 ```sh
 /plugin marketplace add team-memory-system/honcho-agent-bridge
